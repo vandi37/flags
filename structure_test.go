@@ -127,7 +127,9 @@ func TestAll(t *testing.T) {
 		!slices.Equal(at.Slice, other.Slice) ||
 		at.String != other.String ||
 		at.UnsafePointer != other.UnsafePointer ||
-		*at.Pointer != *other.Pointer {
+		*at.Pointer != *other.Pointer ||
+		*(*int)(at.UnsafePointer) != n {
 		t.Fatalf("got structure %+v, expected %+v", at, other)
 	}
+
 }

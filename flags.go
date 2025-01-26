@@ -55,7 +55,7 @@ func Parse(args []string, shortcuts map[rune]string) (map[string][]string, error
 
 	var err error
 	if len(errs) > 0 {
-		err = Mega("got some errors", errs)
+		err = mega("got some errors", errs)
 	}
 
 	return res, err
