@@ -46,6 +46,7 @@ func setValue(args []string, field reflect.Value, fieldName string) error {
 	case reflect.Bool:
 		if len(args) <= 0 {
 			field.SetBool(true)
+			return nil
 		}
 		if len(args) != 1 {
 			return TOO_MANY_ARGUMENTS(fieldName)
@@ -140,7 +141,7 @@ func setValue(args []string, field reflect.Value, fieldName string) error {
 		} else {
 			field.SetComplex(c)
 		}
-	case reflect.Pointer, reflect.UnsafePointer:
+	case reflect.UnsafePointer:
 		if len(args) != 1 {
 			return TOO_MANY_ARGUMENTS(fieldName)
 		}
@@ -166,21 +167,21 @@ func setValue(args []string, field reflect.Value, fieldName string) error {
 		}
 
 		for i := 0; i < field.Len(); i++ {
-			if err := setValue([]string{args[0]}, field.Index(i), strconv.Itoa(i)); err != nil {
+			if err := setValue([]string{args[i]}, field.Index(i), strconv.Itoa(i)); err != nil {
 				return err
 			}
 		}
 
 	case reflect.Slice:
-		if len(args) > field.Cap()-field.Len() {
-			newLen := field.Len() + len(args)
-			newSlice := reflect.MakeSlice(field.Type(), newLen, newLen)
+		filedLen := field.Len()
+		if len(args) > field.Cap()-filedLen {
+			newSlice := reflect.MakeSlice(field.Type(), filedLen+len(args), filedLen+len(args))
 			reflect.Copy(newSlice, field)
 			field.Set(newSlice)
 		}
 
 		for i := 0; i < len(args); i++ {
-			if err := setValue([]string{args[0]}, field.Index(field.Len()+1), strconv.Itoa(field.Len()+1)); err != nil {
+			if err := setValue([]string{args[i]}, field.Index(filedLen+i), strconv.Itoa(filedLen+i)); err != nil {
 				return err
 			}
 		}
@@ -207,6 +208,11 @@ func setValue(args []string, field reflect.Value, fieldName string) error {
 			res = vals
 		}
 		field.Set(reflect.ValueOf(res))
+	case reflect.Pointer:
+		if field.IsNil() {
+			field.Set(reflect.New(field.Type().Elem()))
+		}
+		return setValue(args, field.Elem(), fieldName)
 	default:
 		return UNSUPPORTABLE_TYPE(field.Kind().String())
 
