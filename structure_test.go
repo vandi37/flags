@@ -133,3 +133,28 @@ func TestAll(t *testing.T) {
 	}
 
 }
+
+type base struct {
+	Num int
+}
+
+type inside struct {
+	Base base
+	Str  string
+}
+
+func TestInside(t *testing.T) {
+	val := new(inside)
+	err := flags.Load(strings.Fields("--num 37 --str 'be'"), val, map[rune]string{})
+	if err != nil {
+		t.Fatalf("got an error: %v", err)
+	}
+
+	need := inside{
+		Str:  "be",
+		Base: base{Num: 37},
+	}
+	if need.Base.Num != val.Base.Num || need.Str != val.Str {
+		t.Fatalf("got structure %+v, expected %+v", val, need)
+	}
+}

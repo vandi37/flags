@@ -16,16 +16,27 @@ func Insert(flags map[string][]string, v any) error {
 	rv = rv.Elem()
 	rt := rv.Type()
 
-	if rv.Kind() != reflect.Struct {
+	return insert(flags, rv, rt)
+}
+
+func insert(flags map[string][]string, v reflect.Value, t reflect.Type) error {
+	if v.Kind() != reflect.Struct {
 		return IS_NOT_A_STRUCT()
 	}
 
-	for i := 0; i < rv.NumField(); i++ {
-		field := rv.Field(i)
-		fieldType := rt.Field(i)
+	for i := 0; i < v.NumField(); i++ {
+		field := v.Field(i)
+		fieldType := t.Field(i)
 		fieldName := fieldType.Tag.Get("flag")
 		if fieldName == "" {
 			fieldName = camelToSnake(fieldType.Name)
+		}
+
+		if field.Kind() == reflect.Struct {
+			if err := insert(flags, field, fieldType.Type); err != nil {
+				return err
+			}
+			continue
 		}
 
 		args, ok := flags[fieldName]
