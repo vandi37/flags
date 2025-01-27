@@ -1,14 +1,13 @@
-fix orthography in this readme
-
+Please convert this readme to go doc comment format
 # FLags
 
-Flags are an alternative for [flag standard package](https://pkg.go.dev/flag) and other libs.
+Flags are an alternative to the [flag standard package](https://pkg.go.dev/flag).
 
-## Flag format
+## Flag Format
 
 Here are some rules for flags
 
-### Normal flags
+### Normal Flags
 
 1. A flag **always** starts with "--"
 
@@ -18,7 +17,7 @@ Example:
 --flag
 ```
 
-2. A flag can have values after
+2. A flag may have values
 
 Example:
 
@@ -26,35 +25,35 @@ Example:
 --flag value
 ```
 
-Flags can have multiple value
+Flags can have multiple values. 
 
 ```string
 --flag value1 value2 value3 ...
 ```
 
-### Shortcuts
+### Shortcut Flags
 
-Flags can have shortcuts (as chars)
+Shortcut always starts with.
 
 1. Shortcuts **always** starts with "-"
 
-Example shortcut 'f' to flag "flag":
+ Example, shortcut 'f' for flag "flag": 
 
 ```string
 -f
 ```
 
-2. You can use multiple shortcuts
+2. You can have multiple shortcuts. 
 
-Example shortcut 'f' to flag "flag" and 'o' to flag "other_flag":
+Example shortcut 'f' for flag "flag" and 'o' to flag "other_flag":
 
 ```string
 -fo
 ```
 
-3. Singular shortcuts have the same value rules like normal flags
+3. Singular shortcut has the same rules as normal flags.
 
-Example shortcut 'f' to flag "flag":
+Example shortcut 'f' for flag "flag":
 
 ```string
 -f value
@@ -64,7 +63,7 @@ Example shortcut 'f' to flag "flag":
 -f value1 value2 value3 ...
 ```
 
-4. With multiple shortcuts each shortcut will take only one value
+4. Each shortcut takes only one value. 
 
 Example shortcut 'f' to flag "flag" and 'o' to flag "other_flag":
 
@@ -72,43 +71,41 @@ Example shortcut 'f' to flag "flag" and 'o' to flag "other_flag":
 -fo value_for_flag value_for_other_flag 
 ```
 
-But the last shortcut will use all value that are left
+With multiple shortcuts, the last one will use any remaining values.
 
 ```string
 -fo value_for_flag value_for_other_flag also_value_for_other_flag ...
 ```
 
-## Converting to types rules
+## Converting Flags to Types
 
-You can insert flags into a structure. here are some rules.
+Flags may be inserted into a structure, here are the rules:
 
-Convert order is:
+### Integers (int, int8...int64, uint, uint8...uint64, uintptr, time.Duration, unsafe.Pointer)
 
-### integers (int, int8...int64, uint, uint8...uint64, uintptr, time.Duration, unsafe.Pointer)
+1. Convert to base 10.
 
-1. Converting to base 10
+2. Convert from base 2 (binary) to base 16 (hex).
 
-2. Converting form base 2 to base 16
+3. For integers (int, int8...int64) convert to time.Duration
 
-3. for integers (int, int8...int64) converting to time.Duration
+### Boolean
 
-### boolean
+1. Without arguments, it's true.
 
-1. Without args is true
-
-2. Converting to bool (strconv.ParseBool)
+2. Convert to bool using strconv.ParseBool
 
 ### float (float32, float64)
 
-Converting to float (strconv.ParseFloat)
+Convert to float using strconv.ParseFloat
 
-### complex (complex64, complex128)
+### Complex (complex64, complex128)
 
-Converting to complex (strconv.ParseComplex)
+Convert to complex using strconv.ParseComplex
 
-### string
+### String
 
-If there are brackets (", ', `) it trims them and gets the string
+If there are brackets (", ', `) , trim them and get the string
 
 > [!WARNING]
 >
@@ -116,7 +113,7 @@ If there are brackets (", ', `) it trims them and gets the string
 
 ### array
 
-It goes through the array and fills it with values (multiple values) for each value in the array it is using the same converting rule
+It goes through the array and fills it with multiple values for each value. It uses the same conversion rule for all values in the array.
 
 > [!WARNING]
 >
@@ -124,15 +121,15 @@ It goes through the array and fills it with values (multiple values) for each va
 
 ### slice
 
-It starts with the last elements in the slice and appends all values (multiple values) for each value it is using the same converting rule
+It starts with the last element in the slice, and appends all the values (multiple values), for each value, using the same conversion rule.
 
 ### time
 
-It will parse using all time formats. You can add your format
+Parse using all time formats. You can specify your own formats. 
 
 ### interface
 
-If it is an empty interface(`interface{}`) it will use default converting
+If it's an empty interface (interface{}), use default conversion
 
 1. string
 2. int
@@ -143,11 +140,11 @@ If it is an empty interface(`interface{}`) it will use default converting
 
 ### pointer
 
-it will convert using the same convert rules into the type the pointer is linking to
+Convert using same conversion rules to type pointed to by pointer
 
 ### struct
 
-it will do the same converting with the same flags for this struct
+Do same conversion with same flags on this struct.
 
 > [!WARNING]
 >
