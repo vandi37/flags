@@ -1,5 +1,3 @@
-// Flags are an alternative to the [flag standard package](https://pkg.go.dev/flag).
-//
 // # Flag Format
 //
 // # Here are some rules for flags
@@ -9,16 +7,22 @@
 // 1. A flag **always** starts with "--"
 //
 // Example:
-// `--flag`
+// ```
+// --flag
+// ```
 //
 // 2. A flag may have values
 //
 // Example:
-// `--flag value`
+// ```
+// --flag value
+// ```
 //
 // Flags can have multiple values.
 //
-// `--flag value1 value2 value3 ...`
+// ```
+// --flag value1 value2 value3 ...
+// ```
 //
 // - Shortcut Flags
 //
@@ -28,28 +32,43 @@
 //
 //	Example, shortcut 'f' for flag "flag":
 //
-// `-f`
+// ```
+// -f
+// ```
 //
 // 2. You can have multiple shortcuts.
 //
 // Example shortcut 'f' for flag "flag" and 'o' to flag "other_flag":
-// `-fo`
+//
+// ```
+// -fo
+// ```
 //
 // 3. Singular shortcut has the same rules as normal flags.
 //
 // Example shortcut 'f' for flag "flag":
-// `-f value`
 //
-// `-f value1 value2 value3 ...`
+// ```
+// -f value
+// ```
+//
+// ```
+// -f value1 value2 value3 ...
+// ```
 //
 // 4. Each shortcut takes only one value.
 //
 // Example shortcut 'f' to flag "flag" and 'o' to flag "other_flag":
-// `-fo value_for_flag value_for_other_flag`
+//
+// ```
+// -fo value_for_flag value_for_other_flag
+// ```
 //
 // With multiple shortcuts, the last one will use any remaining values.
 //
-// `-fo value_for_flag value_for_other_flag also_value_for_other_flag ...`
+// ```
+// -fo value_for_flag value_for_other_flag also_value_for_other_flag ...
+// ```
 //
 // # Converting Flags to Types
 //
