@@ -4,7 +4,11 @@ import (
 	"strings"
 )
 
-func Parse(args []string, shortcuts map[rune]string) (map[string][]string, error) {
+func Parse(args []string) (map[string][]string, error) {
+	return ParseWithShortcuts(args, map[rune]string{})
+}
+
+func ParseWithShortcuts(args []string, shortcuts map[rune]string) (map[string][]string, error) {
 	res := make(map[string][]string)
 	errs := []error{}
 

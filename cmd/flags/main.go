@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	res, err := flags.Parse(os.Args[1:], map[rune]string{})
+	res, err := flags.Parse(os.Args[1:])
 
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "got error:", err.Error())

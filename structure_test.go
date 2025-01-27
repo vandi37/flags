@@ -18,7 +18,7 @@ type withSlice struct {
 }
 
 func TestWithSlice(t *testing.T) {
-	f, err := flags.Parse(strings.Fields("--val 'be' --val2 37 --slice 37 42 418"), map[rune]string{})
+	f, err := flags.Parse(strings.Fields("--val 'be' --val2 37 --slice 37 42 418"))
 	if err != nil {
 		t.Fatalf("got an error: %v", err)
 	}
@@ -66,7 +66,7 @@ type allTypes struct {
 func TestAll(t *testing.T) {
 	var n = 42
 	ptr := unsafe.Pointer(&n)
-	f, err := flags.Parse(strings.Fields("--pointer 37 --bool --int 10 --int8 8 --int16 16 --int32 32 --int64 64 --uint 10 --uint8 8 --uint16 16 --uint32 32 --uint64 64 --uintptr 10 --float32 32.320000 --float64 64.640000 --complex64 (3+4i) --complex128 (5+6i) --array 1 2 3 4 5 --interface 'hello' --slice 'a' 'b' 'c' --string 'test' --unsafe_pointer "+strconv.Itoa(int(uintptr(ptr)))), map[rune]string{})
+	f, err := flags.Parse(strings.Fields("--pointer 37 --bool --int 10 --int8 8 --int16 16 --int32 32 --int64 64 --uint 10 --uint8 8 --uint16 16 --uint32 32 --uint64 64 --uintptr 10 --float32 32.320000 --float64 64.640000 --complex64 (3+4i) --complex128 (5+6i) --array 1 2 3 4 5 --interface 'hello' --slice 'a' 'b' 'c' --string 'test' --unsafe_pointer " + strconv.Itoa(int(uintptr(ptr)))))
 	if err != nil {
 		t.Fatalf("got an error: %v", err)
 
@@ -145,7 +145,7 @@ type inside struct {
 
 func TestInside(t *testing.T) {
 	val := new(inside)
-	err := flags.Load(strings.Fields("--num 37 --str 'be'"), val, map[rune]string{})
+	err := flags.Load(strings.Fields("--num 37 --str 'be'"), val)
 	if err != nil {
 		t.Fatalf("got an error: %v", err)
 	}

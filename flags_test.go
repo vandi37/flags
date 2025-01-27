@@ -85,7 +85,7 @@ func TestOk(t *testing.T) {
 
 	for i, tc := range cases {
 		t.Run(fmt.Sprintf("#%d %s", i, tc.name), func(t *testing.T) {
-			res, err := flags.Parse(tc.args, tc.shortcuts)
+			res, err := flags.ParseWithShortcuts(tc.args, tc.shortcuts)
 			if err != nil {
 				t.Fatalf("got an error: %v", err)
 			}
@@ -132,7 +132,7 @@ func TestError(t *testing.T) {
 
 	for i, tc := range cases {
 		t.Run(fmt.Sprintf("#%d %s", i, tc.name), func(t *testing.T) {
-			res, err := flags.Parse(tc.args, tc.shortcuts)
+			res, err := flags.ParseWithShortcuts(tc.args, tc.shortcuts)
 			for _, e := range tc.errs {
 				if !errors.Is(err, e) {
 					t.Fatalf("got different errors expected %v, got %v", e, err)
