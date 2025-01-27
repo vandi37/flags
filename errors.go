@@ -1,5 +1,8 @@
 package flags
 
+// It is all errors, that are used in this package
+//
+// You can compare the errors using errors.Is(your_error, ERROR_REF()) (The error reference could be without values, it won't change the result)
 var (
 	// need a string
 	TWICE_FLAG = err("twice flag", "flag '%s' is used twice in the arguments")

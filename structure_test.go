@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"strings"
 	"testing"
+	"time"
 	"unsafe"
 
 	"github.com/vandi37/flags"
@@ -61,12 +62,14 @@ type allTypes struct {
 	String        string
 	Pointer       *int
 	UnsafePointer unsafe.Pointer
+	Time          time.Time
 }
 
 func TestAll(t *testing.T) {
 	var n = 42
+	now := time.Now()
 	ptr := unsafe.Pointer(&n)
-	f, err := flags.Parse(strings.Fields("--pointer 37 --bool --int 10 --int8 8 --int16 16 --int32 32 --int64 64 --uint 10 --uint8 8 --uint16 16 --uint32 32 --uint64 64 --uintptr 10 --float32 32.320000 --float64 64.640000 --complex64 (3+4i) --complex128 (5+6i) --array 1 2 3 4 5 --interface 'hello' --slice 'a' 'b' 'c' --string 'test' --unsafe_pointer " + strconv.Itoa(int(uintptr(ptr)))))
+	f, err := flags.Parse(append(strings.Fields("--pointer 37 --bool --int 10 --int8 8 --int16 16 --int32 32 --int64 64 --uint 10 --uint8 8 --uint16 16 --uint32 32 --uint64 64 --uintptr 10 --float32 32.320000 --float64 64.640000 --complex64 (3+4i) --complex128 (5+6i) --array 1 2 3 4 5 --interface 'hello' --slice 'a' 'b' 'c' --string 'test' --unsafe_pointer "+strconv.Itoa(int(uintptr(ptr)))+" --time "), now.Format(time.RFC3339Nano)))
 	if err != nil {
 		t.Fatalf("got an error: %v", err)
 
@@ -104,6 +107,7 @@ func TestAll(t *testing.T) {
 		String:        "test",
 		Pointer:       &i,
 		UnsafePointer: ptr,
+		Time:          now,
 	}
 
 	if at.Bool != other.Bool ||
@@ -128,7 +132,8 @@ func TestAll(t *testing.T) {
 		at.String != other.String ||
 		at.UnsafePointer != other.UnsafePointer ||
 		*at.Pointer != *other.Pointer ||
-		*(*int)(at.UnsafePointer) != n {
+		*(*int)(at.UnsafePointer) != n ||
+		!at.Time.Equal(other.Time) {
 		t.Fatalf("got structure %+v, expected %+v", at, other)
 	}
 

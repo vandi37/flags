@@ -4,9 +4,29 @@ import (
 	"fmt"
 	"reflect"
 	"strconv"
+	"time"
 	"unsafe"
 )
 
+// it inserts values from parsed flags into a struct.
+//
+// It takes a map of flags (the result of [Parse] or [ParseWithShortcuts])
+// and a pointer to a struct. It then sets the struct's fields based on the
+// flag values.
+//
+// The `flags` map uses the flag names (without the leading "--") as keys,
+// and each key is associated with a slice of string values for that flag.
+//
+// The struct fields can be tagged with `flag:"<flag_name>"` to explicitly
+// specify the flag name associated with a field. If a field doesn't have
+// a `flag` tag, the function automatically converts the field name from
+// CamelCase to snake_case to match the expected flag name. Fields with the
+// `flag:"-"` tag are ignored.
+//
+// If an error occurs during the insertion process (e.g., a type mismatch),
+// it will return an error.
+//
+// Full flag values parsing rules are in readme
 func Insert(flags map[string][]string, v any) error {
 	rv := reflect.ValueOf(v)
 	if rv.Kind() != reflect.Ptr || rv.IsNil() {
@@ -28,19 +48,40 @@ func insert(flags map[string][]string, v reflect.Value, t reflect.Type) error {
 		field := v.Field(i)
 		fieldType := t.Field(i)
 		fieldName := fieldType.Tag.Get("flag")
+		if fieldName == "-" {
+			continue
+		}
 		if fieldName == "" {
 			fieldName = camelToSnake(fieldType.Name)
 		}
 
-		if field.Kind() == reflect.Struct {
+		_, ok := field.Interface().(time.Time)
+
+		if !ok && field.Kind() == reflect.Struct {
 			if err := insert(flags, field, fieldType.Type); err != nil {
 				return err
 			}
 			continue
 		}
 
-		args, ok := flags[fieldName]
-		if !ok || !field.CanSet() || args == nil {
+		if !ok && field.Kind() == reflect.Pointer && field.Elem().Kind() == reflect.Struct {
+			if field.IsNil() {
+				field.Set(reflect.New(field.Type().Elem()))
+			}
+			if err := insert(flags, field.Elem(), fieldType.Type.Elem()); err != nil {
+				return err
+			}
+			continue
+		}
+
+		args, exist := flags[fieldName]
+		if !exist || !field.CanSet() || args == nil {
+			continue
+		}
+		if ok {
+			if err := setTime(field, args, fieldName); err != nil {
+				return err
+			}
 			continue
 		}
 
@@ -173,11 +214,11 @@ func setValue(args []string, field reflect.Value, fieldName string) error {
 			field.SetString(s)
 		}
 	case reflect.Array:
-		if field.Len() != len(args) {
+		if field.Len() < len(args) {
 			return TOO_MANY_ARGUMENTS(fieldName)
 		}
 
-		for i := 0; i < field.Len(); i++ {
+		for i := 0; i < len(args); i++ {
 			if err := setValue([]string{args[i]}, field.Index(i), strconv.Itoa(i)); err != nil {
 				return err
 			}
@@ -224,9 +265,9 @@ func setValue(args []string, field reflect.Value, fieldName string) error {
 			field.Set(reflect.New(field.Type().Elem()))
 		}
 		return setValue(args, field.Elem(), fieldName)
+	// case reflect.Chan: TODO: Add chan functional
 	default:
 		return UNSUPPORTABLE_TYPE(field.Kind().String())
-
 	}
 	return nil
 }

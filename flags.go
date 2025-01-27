@@ -4,10 +4,34 @@ import (
 	"strings"
 )
 
+// it parses a slice of strings into a map of flag names to their values.
+//
+// It processes command-line arguments, recognizing flags (e.g., "--flag")
+// and their associated values. Multiple values for the same flag are allowed.
+//
+// It returns a map where keys are flag names (without the leading "--") and
+// values are slices of strings representing the values for that flag.
+//
+// This function does not support short flag shortcuts. For that, use
+// [ParseWithShortcuts].
+//
+// Full flag forming rules are in readme
 func Parse(args []string) (map[string][]string, error) {
 	return ParseWithShortcuts(args, map[rune]string{})
 }
 
+// it parses a slice of strings into a map of flag names to
+// their values, allowing for short flag shortcuts.
+//
+// It works similarly to [Parse], but also recognizes short flag shortcuts
+// (e.g., "-f" which could be mapped to "--flag", also -fo could me mapped to "--flag" and "--other_flag"). The `shortcuts` map defines
+// these mappings, where the key is the shortcut rune (e.g., 'f') and the
+// value is the full flag name (e.g., "flag").
+//
+// It returns a map where keys are full flag names (without the leading "--")
+// and values are slices of strings representing the values for that flag.
+//
+// Full flag forming rules are in readme
 func ParseWithShortcuts(args []string, shortcuts map[rune]string) (map[string][]string, error) {
 	res := make(map[string][]string)
 	errs := []error{}

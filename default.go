@@ -27,6 +27,10 @@ func convertInt(s string, size int) (int64, bool) {
 			return n, true
 		}
 	}
+
+	if n, err := time.ParseDuration(s); err == nil {
+		return int64(n), true
+	}
 	return 0, false
 }
 
@@ -70,33 +74,4 @@ func defaultConvert(s string) any {
 	return nil
 }
 
-var timeFormats = []string{
-	time.Layout,
-	time.ANSIC,
-	time.UnixDate,
-	time.RubyDate,
-	time.RFC822,
-	time.RFC822Z,
-	time.RFC850,
-	time.RFC1123,
-	time.RFC1123Z,
-	time.RFC3339,
-	time.RFC3339Nano,
-	time.Kitchen,
-	time.Stamp,
-	time.StampMilli,
-	time.StampMicro,
-	time.StampNano,
-	time.DateTime,
-	time.DateOnly,
-	time.TimeOnly,
-}
 
-func parseTime(s string) (time.Time, bool) {
-	for _, format := range timeFormats {
-		if t, err := time.Parse(format, s); err == nil {
-			return t, true
-		}
-	}
-	return time.Time{}, false
-}
